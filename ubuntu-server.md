@@ -13,6 +13,7 @@ This guide details the configuration of an Ubuntu Server to work with the ELK St
   - [Step 3: Configuring MySQL Logs](#step-3-configuring-mysql-logs)
   - [Step 4: Restart MySQL Service](#step-4-restart-mysql-service)
   - [Step 5: Verify MySQL Logs](#step-5-verify-mysql-logs)
+- [Configuring Firewall with UFW](#configuring-firewall-with-ufw)
 - [Configuring Filebeat](#configuring-filebeat)
   - [Installing Filebeat](#installing-filebeat)
   - [Configuring Filebeat Inputs](#configuring-filebeat-inputs)
@@ -223,6 +224,66 @@ Ensure that the log files exist and are being updated:
 ls -l /var/log/mysql/
 ```
 - You should see `error.log`, `mysql-slow.log`, and `mysql.log` (if enabled).
+
+---
+
+## Configuring Firewall with UFW
+
+To secure the server, it is essential to configure the firewall. This guide uses **UFW (Uncomplicated Firewall)**, a user-friendly interface for managing iptables firewall rules on Ubuntu.
+
+### Step 1: Install UFW
+
+If UFW is not already installed, you can install it by running:
+```bash
+sudo apt install ufw
+```
+
+### Step 2: Configure Basic Firewall Rules
+
+Allow HTTP, HTTPS, and SSH traffic to ensure essential access for web services and remote management.
+
+```bash
+# Allow HTTP traffic
+sudo ufw allow 80/tcp
+
+# Allow HTTPS traffic
+sudo ufw allow 443/tcp
+
+# Allow SSH traffic for remote access
+sudo ufw allow ssh
+```
+
+### Step 3: Set Default Policies
+
+Set default policies to deny all incoming connections except those explicitly allowed, and permit all outgoing connections.
+
+```bash
+# Deny all incoming connections by default
+sudo ufw default deny incoming
+
+# Allow all outgoing connections by default
+sudo ufw default allow outgoing
+```
+
+### Step 4: Enable UFW and Logging
+
+Enable the UFW firewall and start logging, which will record firewall actions in the system logs for auditing and troubleshooting.
+
+```bash
+# Enable UFW firewall
+sudo ufw enable
+
+# Enable logging for firewall actions
+sudo ufw logging on
+```
+
+### Step 5: Verify UFW Status
+
+Check the firewall status and list the active rules to verify your configuration.
+
+```bash
+sudo ufw status verbose
+```
 
 ---
 

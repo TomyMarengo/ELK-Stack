@@ -8,12 +8,16 @@ This guide details the configuration of an Ubuntu Server to work with the ELK St
 - [Setting Up Apache](#setting-up-apache)
   - [Deploying PHP Application](#deploying-php-application)
 - [Setting Up MySQL](#setting-up-mysql)
-  - [Configuring MySQL Logs](#configuring-mysql-logs)
+  - [Step 1: Install MySQL](#step-1-install-mysql)
+  - [Step 2: Creating MySQL Tables](#step-2-creating-mysql-tables)
+  - [Step 3: Configuring MySQL Logs](#step-3-configuring-mysql-logs)
+  - [Step 4: Restart MySQL Service](#step-4-restart-mysql-service)
+  - [Step 5: Verify MySQL Logs](#step-5-verify-mysql-logs)
 - [Configuring Filebeat](#configuring-filebeat)
   - [Installing Filebeat](#installing-filebeat)
   - [Configuring Filebeat Inputs](#configuring-filebeat-inputs)
-  - [Configuring Output to Logstash](#configuring-output-to-logstash)
   - [Enabling Filebeat Modules](#enabling-filebeat-modules)
+  - [Editing Filebeat Modules Configuration](#editing-filebeat-modules-configuration)
   - [Setting Up Ingest Pipelines and Dashboards](#setting-up-ingest-pipelines-and-dashboards)
 - [Deploying PHP Application Files](#deploying-php-application-files)
 - [Troubleshooting](#troubleshooting)
@@ -130,8 +134,45 @@ MySQL is a relational database management system. This section covers installing
     sudo systemctl enable mysql
     sudo systemctl start mysql
     ```
+    
+### Step 2: Creating MySQL Tables
 
-### Configuring MySQL Logs
+Create the necessary tables for the PHP application.
+
+1. **Access MySQL Shell**:
+    ```bash
+    mysql -u root -p tarea_app
+    ```
+
+2. **Create Tables**:
+
+    -- Tabla de Usuarios
+    ```sql
+    CREATE TABLE usuarios (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL
+    );
+    ```
+
+    -- Tabla de Tareas
+    ```sql
+    CREATE TABLE tareas (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        usuario_id INT NOT NULL,
+        titulo VARCHAR(255) NOT NULL,
+        descripcion TEXT,
+        fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    );
+    ```
+
+3. **Exit MySQL Shell**:
+    ```sql
+    EXIT;
+    ```
+
+### Step 3: Configuring MySQL Logs
 
 Ensure MySQL is configured to generate the required logs: Error Log, Slow Query Log, and optionally the General Query Log.
 
@@ -168,14 +209,14 @@ Ensure MySQL is configured to generate the required logs: Error Log, Slow Query 
 5. **Save and Exit**:
     - Press `CTRL + X`, then `Y`, and `Enter`.
 
-#### b. Restart MySQL Service
+### Step 4: Restart MySQL Service
 
 Apply the changes by restarting MySQL:
 ```bash
 sudo systemctl restart mysql
 ```
 
-### Step 2: Verify MySQL Logs
+### Step 5: Verify MySQL Logs
 
 Ensure that the log files exist and are being updated:
 ```bash
@@ -268,6 +309,29 @@ Filebeat is a lightweight shipper for forwarding and centralizing log data.
       ```bash
       sudo filebeat modules enable system
       ```
+### Editing Filebeat Modules Configuration
+
+Edit the Apache module configuration to specify the log paths.
+
+1. **Edit Apache Module Configuration File**:
+    ```bash
+    sudo nano /etc/filebeat/modules.d/apache.yml
+    ```
+
+2. **Specify Log Paths**:
+    ```yaml
+    - module: apache
+      access:
+        enabled: true
+        var.paths: ["/var/log/apache2/access.log*"]
+
+      error:
+        enabled: true
+        var.paths: ["/var/log/apache2/error.log*"]
+    ```
+
+3. **Save and Exit**:
+    - Press `CTRL + X`, then `Y`, and `Enter`.
 
 ### Setting Up Ingest Pipelines and Dashboards
 

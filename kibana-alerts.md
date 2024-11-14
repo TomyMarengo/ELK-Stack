@@ -23,8 +23,8 @@
 
 Kibana is a powerful visualization tool that allows you to explore, visualize, and monitor your Elasticsearch data. It provides various features, such as dashboards, discovery, and alerting, which are essential for proactive monitoring. In this guide, we will cover how to set up three different types of alerts in Kibana to monitor your Apache logs:
 - **Alert 1**: Missing "healthcheck" logs for more than 1 minute.
-- **Alert 2**: Too many 4xx errors in the last 5 minutes.
-- **Alert 3**: Failed login attempts from a single IP.
+- **Alert 2**: User Login from an unusual IP.
+- **Alert 3**: UFW Blocked Connections - Firewall Attack Detection.
 
 Each alert helps monitor different aspects of your server, ensuring your application runs smoothly and securely.
 

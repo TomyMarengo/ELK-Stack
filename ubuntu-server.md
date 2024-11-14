@@ -458,7 +458,3 @@ Upload your PHP application files to the `tarea_app` directory in the Apache web
 - **Elasticsearch Indexing Issues**:
     - Verify Elasticsearch is running and accessible.
     - Check Elasticsearch logs for any errors related to indexing.
-
----
-
-This completes the Ubuntu Server configuration guide for integrating with the ELK Stack. Ensure all steps are followed accurately and refer to the troubleshooting section if you encounter any issues. Proceed to configure other servers and Kibana alerts as needed.

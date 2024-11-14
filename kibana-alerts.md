@@ -48,7 +48,7 @@ This alert helps ensure that any disruptions in server health checks are detecte
 2. Click **Create Rule**.
 3. Complete the following fields:
     - **Name**: `Apache Healthcheck`
-    - **Check every**: `30 seconds`
+    - **Check every**: `1 minute`
     - **Notify**: `Every time alert is active`
 
 4. Select the rule type as **Log threshold**.

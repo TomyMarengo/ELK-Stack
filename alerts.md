@@ -1,24 +1,23 @@
 # Alert Creation in Kibana
 
 ## Table of Contents
-1. [Introduction](#introduction)
-2. [Prerequisites](#prerequisites)
-3. [Alert 1: Missing "healthcheck" Logs for More Than 1 Minute](#alert-1-missing-healthcheck-logs-for-more-than-1-minute)
-    1. [Create a Rule](#create-a-rule)
-   2. [Define the Alert Condition](#define-the-alert-condition)
-   3. [Set Alert Actions](#set-alert-actions)
-   4. [Testing the Apache Healthcheck Alert in Kibana](#testing-the-apache-healthcheck-alert-in-kibana)
-4. [Alert 2: User Login from an unusual IP](#alert-2-user-login-from-an-unusual-ip)
-   1. [Create a Rule](#create-a-rule-1)
-   2. [Define the Alert Condition](#define-the-alert-condition-1)
-   3. [Set Alert Actions](#set-alert-actions-1)
-   4. [Testing the Unusual IP Alert in Kibana](#testing-the-unusual-ip-alert-in-kibana)
-5. [Alert 3: UFW Blocked Connections - Firewall Attack Detection](#alert-3-ufw-blocked-connections---firewall-attack-detection)
-   1. [Create a Rule](#create-a-rule-2)
-   2. [Define the Alert Condition](#define-the-alert-condition-2)
-   3. [Set Alert Actions](#set-alert-actions-2)
-   4. [Testing the UFW Blocked Connection Alert](#testing-the-ufw-blocked-connection-alert)
-7. [Conclusion](#conclusion)
+- [Introduction](#introduction)
+- [Prerequisites](#prerequisites)
+- [Alert 1: Missing "healthcheck" Logs for More Than 1 Minute](#alert-1-missing-healthcheck-logs-for-more-than-1-minute)
+    - [Create a Rule](#create-a-rule)
+    - [Define the Alert Condition](#define-the-alert-condition)
+    - [Set Alert Actions](#set-alert-actions)
+    - [Testing the Apache Healthcheck Alert in Kibana](#testing-the-apache-healthcheck-alert-in-kibana)
+- [Alert 2: User Login from an unusual IP](#alert-2-user-login-from-an-unusual-ip)
+    - [Create a Rule](#create-a-rule-1)
+    - [Define the Alert Condition](#define-the-alert-condition-1)
+    - [Set Alert Actions](#set-alert-actions-1)
+    - [Testing the Unusual IP Alert in Kibana](#testing-the-unusual-ip-alert-in-kibana)
+- [Alert 3: UFW Blocked Connections - Firewall Attack Detection](#alert-3-ufw-blocked-connections---firewall-attack-detection)
+    - [Create a Rule](#create-a-rule-2)
+    - [Define the Alert Condition](#define-the-alert-condition-2)
+    - [Set Alert Actions](#set-alert-actions-2)
+    - [Testing the UFW Blocked Connection Alert](#testing-the-ufw-blocked-connection-alert)
 
 ## Introduction
 
@@ -42,6 +41,7 @@ Before you begin, ensure that:
 The **Healthcheck Alert** in Kibana is designed to monitor Apache server logs for missing healthcheck requests. This alert triggers when the Apache server does not send a healthcheck log within a specified time window (e.g., 1 minute). It is useful for detecting if the server has become unresponsive or if there are issues with healthcheck logging, which could indicate server downtime or other problems.
 
 This alert helps ensure that any disruptions in server health checks are detected promptly, allowing for proactive monitoring and troubleshooting.
+
 ### Create a Rule
 
 1. In Kibana, go to **Rules and Connectors**.
@@ -84,6 +84,7 @@ This will trigger the alert if no healthcheck logs from `ELB-HealthChecker/2.0` 
 ```
 
 ### Testing the Apache Healthcheck Alert in Kibana
+
 After setting up the alert for missing "healthcheck" logs from Apache, it's important to test whether the alert works as expected. To do this, we will simulate the scenario where the Apache server stops sending healthcheck logs, which will trigger the alert. Follow the steps below to test the alert:
 1. Stop the Apache server to simulate the missing healthcheck logs:
    ```bash
@@ -99,6 +100,7 @@ After setting up the alert for missing "healthcheck" logs from Apache, it's impo
 
 ## Alert 2: User Login from an unusual IP
 This alert is triggered when a user logs in from a different IP address than before. This can help detect potentially suspicious login activity or unauthorized access attempts. For this example, we'll set up an alert that checks when a user logs in from a new IP address.
+
 ### Create a Rule
 
 1. In Kibana, go to **Rules and Connectors**.
@@ -145,7 +147,8 @@ For the condition, we’ll write an Elasticsearch query that checks for multiple
 ```
 It checks if the email field has multiple associated ip_address values for the same user.
 
-### Set Alert Actions
+### Define the Alert Actions
+
 1. Create a connector for the action that will be triggered when the alert is fired. In this case, we’ll create an Index connector (you can also use Webhook or Email if your license allows).
 2. Configure the connector:
     - **Connector name**: `login-ip-connector`
@@ -168,9 +171,10 @@ To test the alert, you can simulate a user logging in from different IP addresse
 5. You should see an entry indicating that the alert was triggered.
 
 ## Alert 3: UFW Blocked Connections - Firewall Attack Detection
+
 This alert is triggered when a UFW (Uncomplicated Firewall) log entry indicates that a connection attempt was blocked. This can help detect potential attack attempts on a server. The alert looks for log entries that contain the string "BLOCK" in the `message` field of UFW logs.
 
-## Create a Rule in Kibana
+### Create a Rule
 
 1. In Kibana, go to **Rules and Connectors**.
 2. Click **Create Rule**.
@@ -193,7 +197,7 @@ This alert is triggered when a UFW (Uncomplicated Firewall) log entry indicates 
 ```
 The query looks for entries in the message field that contain the string "BLOCK", which is part of UFW log messages indicating that an incoming connection has been blocked.
 
-## Set Alert Actions
+### Define the Alert Actions
 1. Create a connector for the action that will be triggered when the alert is fired. You can create an Index connector (or use Webhook or Email if your license allows).
 
 2. Configure the connector:
@@ -208,14 +212,11 @@ The query looks for entries in the message field that contain the string "BLOCK"
   "rule_name": "{{rule.name}}"
 }
 ```
-## Testing the UFW Blocked Connection Alert
+
+### Testing the UFW Blocked Connection Alert
+
 1. Trigger a UFW block by attempting to connect to the server from a blocked IP (you can use a VPN or an external IP).
 2. Wait for the alert condition to be met (within 1 minute).
 3. Go to Discover in Kibana and search for the index .alerts-observability.logs.alerts-default.
 4. Filter by rule_name: "UFW Blocked Connection" to view the triggered alert logs.
 5. Verify that the logs with the string "BLOCK" in the message field appear, indicating that the alert was successfully triggered.
-
-
-## Conclusion
-Setting up alerts in Kibana is essential for proactive monitoring and ensuring the health and security of your server. By creating custom alerts tailored to your specific use cases, you can detect and respond to potential issues quickly. In this guide, we covered how to set up alerts for missing healthcheck logs, unusual user login activity, and UFW blocked connections. You can further customize these alerts based on your requirements and extend them to cover additional scenarios. Regularly testing your alerts and refining them based on feedback and observations will help you maintain a robust monitoring system for your server.
-```
